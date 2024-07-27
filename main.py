@@ -1,5 +1,5 @@
 import argparse
-from tools import Host_Scan,Network_Scan
+from tools import Host_Scan,Network_Scan,Sniff
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -18,7 +18,9 @@ scan_parser.add_argument('-r','--recursive',action='store_true',help='start a re
 #sniffer parser
 sniff_parser = subparser.add_parser('sniff',help='sniff packets on a network')
 sniff_parser.add_argument('-I','--interface',help='interface to sniff packets')
-sniff_parser.add_argument('-P','--protocol',help='protocol to sniff packets of , ex : -P http')
+sniff_parser.add_argument('-P','--protocol',type=str,help='protocol to sniff packets of , ex : -P http')
+sniff_parser.add_argument('--dst',type=str,help='only sniff packets going to a certain destination')
+sniff_parser.add_argument('--src',type=str,help='only sniff packets coming from a specific source')
 
 args = parser.parse_args()
 
@@ -36,4 +38,12 @@ if args.mode == 'scan':
         network.scan_network()
 
 if args.mode == 'sniff':
-    print(f"sniff : {args.protocol} of {args.interface}")
+    filters = []
+    arguments = [args.dst,args.src,args.protocol]
+    for argument in arguments:
+       if argument:
+          filters.append(argument)
+    filter_string = ' and '.join(filters)
+    print(filter_string)
+    sniffer = Sniff(args.interface,filter_string)
+    sniffer.capture()
