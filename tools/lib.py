@@ -10,6 +10,9 @@ def get_mac_adress():
     return mac_adress
 
 def arp_cash():
-    cash = subprocess.run("arp -a",shell=True,capture_output=True)
-    if cash :
-        print(cash)
+    cash = subprocess.run("arp -a",shell=True,stdout=subprocess.PIPE,
+                                   text=True,stderr=True)
+    print(cash.stdout)
+
+if __name__ == '__main__' :
+    arp_cash()
