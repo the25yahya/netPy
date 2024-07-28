@@ -14,6 +14,7 @@ scan_parser = subparser.add_parser('scan',help='scan a host or a network subnet'
 scan_parser.add_argument('-H','--host',help='host ip adresss to scan')
 scan_parser.add_argument('-N','--network',help='CIDR notation')
 scan_parser.add_argument('-r','--recursive',action='store_true',help='start a recursive scan')
+scan_parser.add_argument('-p','--port',help='probe open ports')
 
 #sniffer parser
 sniff_parser = subparser.add_parser('sniff',help='sniff packets on a network')
@@ -24,7 +25,7 @@ sniff_parser.add_argument('--src',type=str,help='only sniff packets coming from 
 
 #attack parser
 attack_parser = subparser.add_parser('attack',help='perform various wireless attacks')
-attack_parser.add_argument('--arp',help='''
+attack_parser.add_argument('--arp',action='store_true',help='''
 --spoof (arp spoofing attack)
 --wifi (perform various wifi attacks including deauthentication attacks - attention : promiscuous mode is neccessary
                             for some attacks!)                       
@@ -32,6 +33,7 @@ attack_parser.add_argument('--arp',help='''
 attack_parser.add_argument('--dst_IP',help='target ip adress')
 attack_parser.add_argument('--dst_MAC',help='target mac adress')
 attack_parser.add_argument('--gateaway',help='gateaway adress')
+attack_parser.add_argument('--dos',action='store_true',help='flood a host with arp poison attacks causing denial of service')
 
 
 
@@ -45,6 +47,10 @@ if args.mode == 'scan':
             host.host_scan()
         else :
            host.host_scan()
+    if args.host and args.port :
+       host = Host_Scan(args.host)
+       if host.host_scan() :
+          host.probe_port(args.port)
 
     if args.network : 
         network = Network_Scan(args.network)
@@ -61,5 +67,6 @@ if args.mode == 'sniff':
 
 if args.mode == 'attack':
    if args.arp :
-      arp = ARP(args.dst_IP)
-      arp.Spoof(args.dst_MAC,args.gateaway)
+      arp = ARP(args.dst_IP,args.dst_MAC,args.gateaway)
+      if args.arp and args.dos :
+         arp.dos()

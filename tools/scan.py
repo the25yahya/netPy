@@ -1,11 +1,30 @@
-# basic ping scans to determine wether the host is up
-# recursive mode 
-# basic cidr subnet scan 
-# os detection
 from scapy.all import *
 import ipaddress
 import threading
+import socket
 
+
+
+class Host_Scan:
+    def __init__(self,target) :
+        self.target = target
+    def host_scan(self):
+        packet = IP(dst=self.target)/ICMP()
+        response = sr1(packet,timeout=1,verbose=0)
+        if response :
+            icmp_layer = response.getlayer(ICMP)
+            icmp_type = icmp_layer.type
+            icmp_code = icmp_layer.code
+            if icmp_code == 0 and icmp_type == 0 :
+                print(f"host reachable : {self.target}") 
+                return True
+            
+    def probe_port(self,port) :
+        syn_packet = IP(dst=self.target) / TCP(dport=int(port),flags='S')
+        response = sr1(syn_packet,timeout=1,verbose=0)
+        if response and response.haslayer(TCP) and response[TCP].flags == 'SA' :
+            print(f"PORT OPEN : {port}")
+            return True
 
 class Network_Scan:
     def __init__(self,cidr):
@@ -23,20 +42,5 @@ class Network_Scan:
             t.join()
       
 
-class Host_Scan:
-    def __init__(self,target) :
-        self.target = target
-    def host_scan(self):
-        packet = IP(dst=self.target)/ICMP()
-        response = sr1(packet,timeout=1,verbose=0)
-        if response :
-            icmp_layer = response.getlayer(ICMP)
-            icmp_type = icmp_layer.type
-            icmp_code = icmp_layer.code
-            if icmp_code == 0 and icmp_type == 0 :
-                print(f"host reachable : {self.target}") 
-                print(response)
-    
 
-    def Os_detection(self):
-        print(":)")
+
