@@ -15,4 +15,4 @@ def arp_cash():
     print(cash.stdout)
 
 if __name__ == '__main__' :
-    arp_cash()
+    get_mac_adress()
