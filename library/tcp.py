@@ -1,3 +1,9 @@
+import socket
+from sys import argv
+
+script, ip, port, clients = argv
+
+
 class tcpClient:
     def __init__(self,ip,port):
         self.ip = ip
@@ -54,7 +60,7 @@ class tcpServer:
                       if not data:
                           break
                       print(f"[*] received data : {data}")
-                      self.server_socket.sendall(data)
+                      client.sendall(data)
                     except socket.error as e:
                         print(f"[*] error handling client : {e}")
         while True :
@@ -74,3 +80,11 @@ class tcpServer:
             print(f"[*] server at {self.ip}:{self.port} closed")
         for t in self.threads:
             t.join()
+
+
+if __name__ == '__main__' :
+    try :
+        server = tcpServer(ip,int(port),int(clients))
+        server.start_server()
+    except KeyboardInterrupt :
+        server.close_server()
