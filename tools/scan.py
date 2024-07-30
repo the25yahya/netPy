@@ -42,5 +42,3 @@ class Network_Scan:
             t.join()
       
 
-
-

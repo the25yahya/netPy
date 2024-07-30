@@ -1,5 +1,6 @@
 import argparse
 from tools import Host_Scan,Network_Scan,Sniff,ARP
+from library import tcp
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -15,6 +16,7 @@ scan_parser.add_argument('-H','--host',help='host ip adresss to scan')
 scan_parser.add_argument('-N','--network',help='CIDR notation')
 scan_parser.add_argument('-r','--recursive',action='store_true',help='start a recursive scan')
 scan_parser.add_argument('-p','--port',help='probe open ports')
+scan_parser.add_argument('-B','--banner',action='store_true',help='grab banner')
 
 #sniffer parser
 sniff_parser = subparser.add_parser('sniff',help='sniff packets on a network')
@@ -55,7 +57,12 @@ if args.mode == 'scan':
     if args.network : 
         network = Network_Scan(args.network)
         network.scan_network()
-
+    if args.banner :
+       client = tcp.tcpClient(args.host,args.port)
+       client.connect()
+       banner = client.grab_banner()
+       print(banner)
+       client.close()
 if args.mode == 'sniff':
     filters = []
     arguments = [args.dst,args.src,args.protocol]

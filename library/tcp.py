@@ -1,13 +1,12 @@
 import socket
 from sys import argv
-
-script, ip, port, clients = argv
+import telnetlib
 
 
 class tcpClient:
     def __init__(self,ip,port):
-        self.ip = ip
-        self.port = port
+        self.ip = str(ip)
+        self.port = int(port)
         self.client = None
     def connect(self):
         self.client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -30,7 +29,18 @@ class tcpClient:
         
         else:
             print(f"[*] not connected to {self.ip}:{self.port}")
-    
+
+    def grab_banner(self):
+        if self.client:
+          try :
+             banner = self.client.recv(1024)
+             return banner.decode().strip()
+          except Exception as e :
+             print(f"An erro has occured : {str(e)}")
+        else:
+             print(f"[*] Not connected to {self.ip}:{self.port}")
+             return None
+
     def close(self):
         if self.client:
           self.client.close()
@@ -83,6 +93,7 @@ class tcpServer:
 
 
 if __name__ == '__main__' :
+    script, ip, port, clients = argv
     try :
         server = tcpServer(ip,int(port),int(clients))
         server.start_server()
