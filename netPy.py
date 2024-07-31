@@ -1,10 +1,11 @@
 import argparse
 from tools import Host_Scan,Network_Scan,Sniff,ARP
-from library import tcp
+from tools.library import tcp
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="probe, scan, get shells, transfer files, just like netcat"
+        description='''python security tool that can scan networks and hosts , sniff packets and perform networking attacks
+                    '''
     )
 
 
@@ -32,14 +33,16 @@ attack_parser.add_argument('--arp',action='store_true',help='''
 --wifi (perform various wifi attacks including deauthentication attacks - attention : promiscuous mode is neccessary
                             for some attacks!)                       
 ''')
-attack_parser.add_argument('--dst_IP',help='target ip adress')
-attack_parser.add_argument('--dst_MAC',help='target mac adress')
+attack_parser.add_argument('--target',help='target ip adress')
 attack_parser.add_argument('--gateaway',help='gateaway adress')
 attack_parser.add_argument('--dos',action='store_true',help='flood a host with arp poison attacks causing denial of service')
 
 
 
 args = parser.parse_args()
+
+
+##########scan mode#####################
 
 if args.mode == 'scan':
     if args.host :
@@ -63,14 +66,22 @@ if args.mode == 'scan':
        banner = client.grab_banner()
        print(banner)
        client.close()
+
+#########################sniff mode#######################
+
 if args.mode == 'sniff':
     filters = []
-    arguments = [args.dst,args.src,args.protocol]
+    arguments = [args.protocol,args.dst,args.src]
     for argument in arguments:
        if argument:
           filters.append(argument)
     filter_string = ' and '.join(filters)
     print(filter_string)
+    sniff = Sniff()
+    sniff.capture(filter_string)
+
+#######################attack mode#########################3
+
 
 if args.mode == 'attack':
    if args.arp :
