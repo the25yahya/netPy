@@ -1,6 +1,5 @@
 import socket
-from sys import argv
-import telnetlib
+
 
 
 class tcpClient:
@@ -93,9 +92,5 @@ class tcpServer:
 
 
 if __name__ == '__main__' :
-    script, ip, port, clients = argv
-    try :
-        server = tcpServer(ip,int(port),int(clients))
-        server.start_server()
-    except KeyboardInterrupt :
-        server.close_server()
+        client = tcpClient('192.168.1.157',8443)
+        client.connect()
