@@ -24,6 +24,7 @@ scan_parser.add_argument('-B','--banner',action='store_true',help='grab banner')
 #sniffer parser
 sniff_parser = subparser.add_parser('sniff',help='sniff packets on a network')
 sniff_parser.add_argument('-I','--interface',help='interface to sniff packets')
+sniff_parser.add_argument('-H','--Host',help='host to sniff packets from')
 sniff_parser.add_argument('-P','--protocol',type=str,help='protocol to sniff packets of , ex : -P http')
 sniff_parser.add_argument('--dst',type=str,help='only sniff packets going to a certain destination')
 sniff_parser.add_argument('--src',type=str,help='only sniff packets coming from a specific source')
@@ -73,7 +74,7 @@ if args.mode == 'scan':
 
 if args.mode == 'sniff':
     filters = []
-    arguments = [args.protocol,args.dst,args.src]
+    arguments = [args.protocol] + ([f'host {args.Host}'] if args.Host else []) +([f'src host {args.src}'] if args.src else []) + ([f'dst host {args.dst}'] if args.dst else [])
     for argument in arguments:
        if argument:
           filters.append(argument)
